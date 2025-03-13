@@ -1,56 +1,93 @@
-// Algoritmo verificador de códigos de barras
-// Todo código de barras do tipo EAN tem 13 digitos
-// Os 12 primeiros dígitos são o número base, o último é o verificador
-// Para calcular o verificador:
-// Multiplique os dígitos em posições ímpares por 1
-// Multiplique os dígitos em posições pares por 3
-// Some todos os resultados
-// O dígito verificador é o número que, somado ao total, resulta em um múltiplo de 10
-// Depois, extraia as informações do código.
-// Os primeiros 3 dígitos representam o pais de origem
-// Dos digitos 4 a 7, extraímos o código do fabricante
-// Os últimos dígitos representam o código do produto.
-// Utilizar a inteligência artificial para criar uma base de dados para consultar
-// imprima na tela as informações obtidas
-
-function verificarEAN(codigoBarras) {
-    if (codigoBarras.length !== 13) {
-        console.log("O código de barras deve ter 13 dígitos.");
-        return;
-    }
-
-    // separar os 12 primeiros dígitos (número base) e o último dígito (verificador)
-    let base = codigoBarras.slice(0, 12);
-    let verificador = parseInt(codigoBarras[12]);
-
-    // calcular do dígito verificador
-    let soma = 0;
-    for (let i = 0; i < base.length; i++) {
-        let digito = parseInt(base[i]);
-        soma += i % 2 === 0 ? digito * 1 : digito * 3; // Ímpares por 1, pares por 3
-    }
-
-    let calculado = 10 - (soma % 10);
-    if (calculado === 10) calculado = 0; // Ajuste para múltiplos de 10
-
-    // verifica se o dígito verificador é válido
-    if (calculado !== verificador) {
-        console.log("O código de barras é inválido.");
-        return;
-    }
-
-    // tira as infos 
-    let pais = codigoBarras.slice(0, 3);
-    let fabricante = codigoBarras.slice(3, 7);
-    let produto = codigoBarras.slice(7, 12);
-
-    // exiba as informações na tela
-    console.log("Código de barras válido!");
-    console.log("País de origem:", pais);
-    console.log("Código do fabricante:", fabricante);
-    console.log("Código do produto:", produto);
+const bancoDeDados = {
+    paises: [
+        { codigo: '789', nome: 'Brasil' },
+        { codigo: '690', nome: 'China' },
+        { codigo: '880', nome: 'Coreia do Sul' },
+        { codigo: '000', nome: 'Estados Unidos' },
+        { codigo: '400', nome: 'Alemanha' },
+        { codigo: '030', nome: 'Canadá' },
+        { codigo: '076', nome: 'Reino Unido' },
+        { codigo: '950', nome: 'Argentina' },
+        { codigo: '003', nome: 'França' },
+        { codigo: '073', nome: 'México' }
+    ],
+    fabricantes: [
+        { codigo: '7891', nome: 'Fabricante A' },
+        { codigo: '6902', nome: 'Fabricante B' },
+        { codigo: '8812', nome: 'Fabricante C' },
+        { codigo: '4001', nome: 'Fabricante D' },
+        { codigo: '9501', nome: 'Fabricante E' },
+        { codigo: '0301', nome: 'Fabricante F' },
+        { codigo: '0761', nome: 'Fabricante G' },
+        { codigo: '0031', nome: 'Fabricante H' },
+        { codigo: '0731', nome: 'Fabricante I' },
+        { codigo: '0131', nome: 'Fabricante J' }
+    ],
+    produtos: [
+        { codigoEAN: '78912', nome: 'Produto A', fabricante: 'Fabricante A', pais: 'Brasil' },
+        { codigoEAN: '69012', nome: 'Produto B', fabricante: 'Fabricante B', pais: 'China' },
+        { codigoEAN: '88012', nome: 'Produto C', fabricante: 'Fabricante C', pais: 'Coreia do Sul' },
+        { codigoEAN: '40012', nome: 'Produto D', fabricante: 'Fabricante D', pais: 'Alemanha' },
+        { codigoEAN: '95012', nome: 'Produto E', fabricante: 'Fabricante E', pais: 'Argentina' },
+        { codigoEAN: '03012', nome: 'Produto F', fabricante: 'Fabricante F', pais: 'Canadá' },
+        { codigoEAN: '07612', nome: 'Produto G', fabricante: 'Fabricante G', pais: 'Reino Unido' },
+        { codigoEAN: '00312', nome: 'Produto H', fabricante: 'Fabricante H', pais: 'França' },
+        { codigoEAN: '07312', nome: 'Produto I', fabricante: 'Fabricante I', pais: 'México' },
+        { codigoEAN: '01312', nome: 'Produto J', fabricante: 'Fabricante J', pais: 'Estados Unidos' }
+    ]
 }
 
-// ex de uso
-let codigoBarras = "7891234567895"; // insira um código EAN-13 válido aqui
-verificarEAN(codigoBarras);
+function buscarInformacoes(codigoEAN) {
+    if (codigoEAN.length !== 13) {
+        return "Código EAN inválido!";
+    }
+
+    const codigoPais = codigoEAN.substring(0, 3);
+    const codigoFabricante = codigoEAN.substring(0, 6);
+    
+    const pais = bancoDeDadosEAN.paises[codigoPais] || "Desconhecido";
+    const fabricante = bancoDeDadosEAN.fabricantes[codigoFabricante] || "Desconhecido";
+    const produto = bancoDeDadosEAN.produtos[codigoEAN] || "Produto não encontrado";
+
+    return {
+        codigoEAN,
+        pais,
+        fabricante,
+        produto
+    };
+}
+function validaEAN (cod_barras){
+   if (cod_barras.length != 13) {
+   return 'Código inválido'
+   }
+   cod_barras=cod_barras.split('')
+   let soma = 0
+   for (let i = 0; i<cod_barras.length - 1; i++){
+   if(i % 2 != 0){
+    soma += parseInt (cod_barras[i] * 3)
+    }else{
+    soma += parseInt (cod_barras[i])
+    }
+   }
+   let digito = (10 - soma % 10) % 10
+   if (digito != cod_barras[12]) {
+    return 'Código Inválido'
+   }
+
+   return 'Código Válido'
+}
+
+function proucuraProduto(cod_barras){
+let pais = cod_barras.slice(0,5)
+let fabricante = cod_barras.slice(3,7)
+let produto = cod_barras.slice(7,12)
+
+let nome_pais = bancoDeDados.paises.find((item) => item.codigo == "030")
+console.log(nome_pais.nome)
+
+}
+
+let codigo = '4006381333931'
+let resultado = validaEAN(codigo)
+console.log(resultado)
+let produto = proucuraProduto(codigo)
